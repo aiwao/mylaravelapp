@@ -1,0 +1,6 @@
+09:06:18:985 [ALWAYS]	GUDE Logging Started
+09:06:18:986 [INFO]	SqliteResumeCache::SqliteResumeCache basedirectory is null/empty
+09:06:18:986 [ERROR]	SqliteResumeCache::CreateSqliteResumeCache creating resume cache pointer failure
+09:06:18:986 [ERROR]	Initialize resume cache pointer failure
+09:06:18:987 [INFO]	gude policy POLICY_USER limit (4,4,1) chunk 2097152, chunking (UL 0 DL 1), resXfer 1, adapt 0, NSURL 1, timeout 86400 
+09:06:18:987 [INFO]	Initialized -- gude-lib version: v0.12.1 app: gude

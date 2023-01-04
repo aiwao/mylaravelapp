@@ -1,0 +1,476 @@
+##### PHPフレームワーク　Lravel入門 第2版 （掌田先生）########################
+Chapter 1 Laravelを準備する
+
+Chapter 2 ルーティングとコントローラ
+
+＠ルーティング
+特定のアドレスにアクセスしたときに、どの処理を呼び出して実行するかを管理するの
+が「ルーティング」。
+==================================
+
+＠Laravelのファイルについて
+.editorConfig
+エディタに関する汎用設定ファイル
+-----------------
+.env、.env.example
+動作kな教に関する設定情報
+-----------------
+.gitattributes、gitignore
+Git利用に関する情報
+-----------------
+.styleci.yml
+StyleCIコードチェッカーのファイル
+-----------------
+artisan
+artisanコマンド
+-----------------
+composer.json、composer.lock
+composerの利用に関するもの
+-----------------
+package.json、package-lock.json
+JavaScriptのパッケージ管理ツール（npm）で利用するもの
+-----------------
+phpunit.xml
+PHPUnitに関するもの
+-----------------
+server.php
+サーバ起動時に利用されるプログラム
+-----------------
+yarn.lock
+yarnというパッケージマネージャが使うファイル（自動生成される）
+==================================
+
+＠Laravelのフォルダ
+app
+アプリケーションのプログラム部分がまとめられるところ。
+ここにスクリプトファイルを追加していく。
+-----------------
+bootstrap
+アプリケーション実行時に最初に行われる処理がまとめられている。
+-----------------
+config
+設定関係のファイルがまとめられている
+-----------------
+database
+データベース関連のファイルがまとめられている
+-----------------
+public
+公開フォルダ。
+JavaScriptやスタイルシートなど、外部にそのまま公開されるファイルがまとめられて
+いる。
+-----------------
+resources
+リソース関係の配置場所。
+プログラムが利用するリソースファイルが用意される。
+テンプレートファイルなどが用意される。
+-----------------
+routes
+ルート情報の保存場所。
+アクセスするアドレスに割り当てられるプログラムの情報などが記されている。
+-----------------
+storage
+ファイルの保存場所。
+アプリケーションのプログラムが保存するファイルなどが置かれる。
+ログファイルなどはここに保存される。
+-----------------
+tests
+ユニットテスト関係のファイルが用意される。
+-----------------
+vendor
+フレームワーク本体のプログラムがまとめられている。
+==================================
+
+＠appフォルダについて
+Laravelアップロードに用意されているフォルダの中で、もっとも重要で利用頻度が高
+いのがappフォルダ。
+appフォルダは、Laravelアプリケーションの「アプリケーション」部分のプログラムが
+配置される。
+----------------------------------
+＊appフォルダ内のフォルダ
+Console
+コンソールプログラムを配置。
+-----------------
+Exceptions
+例外に関する処理を配置。
+-----------------
+Http
+ウェブアプリケーションにアクセスしたときの処理をまとめておくところ。
+アプリケーションの基本転記なプログラムはここに作成。
+-----------------
+Providers
+プロバイダと呼ばれるプログラムを配置。
+-----------------
+User.php
+ユーザ認証に関するスクリプト。
+==================================
+
+＠ルーティングと「routes」フォルダ
+Laravelは、特定のアドレスにアクセスすると、そのアドレスに割り付けられたプログ
+ラムが実行され、それによって必要な処理や画面表示が行われる。
+-----------------
+このように「○○というアドレスにアクセスしたら、××という処理を呼び出す」とい
+う関連付けを行っているのが「ルーティング」。
+ルーティングは、アクセスを設定している情報（ルート）を管理する機能。
+==================================
+
+＠routesフォルダ
+デフォルトでいくつかのスクリプトファイルが用意されエイル。
+-----------------
+api.php
+APIのルーティング。
+ユーザ認証等のように、プログラム内から利用するAPIの機能を特定のアドレスに割り
+当てるのに利用される。
+-----------------
+channels.php
+ブロードキャストチャンネルのためのルーティング。
+-----------------
+console.php
+コンソールプログラムのためのルーティング。
+-----------------
+web.php
+一般的なWebページとしてアクセスするためのルーティング。
+----------------------------------
+基本的にWebページとして公開するものは、web.phpにルート情報を記述する。
+==================================
+
+＠ルート情報の記述
+/* routes/web.php */
+<?php
+Route::get('/'', function() {
+  return view('welcome');
+});
+----------------------------------
+＊ルート情報の基本（GETアクセス）
+Route::get(アドレス, 関数など);
+-----------------
+GETアクセスのルート情報は、Routeクラスのget静的メソッドで設定する。
+第1引数に割り当てるアドレスを、第2引数にそれにより呼び出される処理。
+第2引数には、関数を指定することも「コントローラ」を指定することもある。
+==================================
+
+＠トップページのルート情報
+第1引数は'/'、例では第2引数は関数となっている。
+-----------------
+function() {
+  return 値;
+}
+-----------------
+引数なしのクロージャ（無名関数）となっている。
+returnされる値がそのアドレスにアクセスした際に表示される内容となる。
+この例では、view関数を使って戻り値を用意している。
+-----------------
+view(テンプレート名)
+-----------------
+viewは、指定したテンプレートファイルをロードし、レンダリングして返す働きをする
+。
+viewで引数にテンプレートを指定すると、それがレンダリングされて返され、ブラウザ
+に表示さえる。
+----------------------------------
+＊welcomeテンプレートについて
+return view('welcome');
+で、welcome.blade.phpテンプレートファイルをレンダリングして表示する。
+-----------------
+テンプレートファイルは、resources/viewsフォルダに配置。
+-----------------
+/* resources/views/welcome.blade.php */
+<!doctype html>
+<html lang="{{ app()->getLocale() }}">
+  <head>
+    <meta charset="utf-8">
+    <!-- バージョン8以降のIEで使用できる互換モード -->
+    <meta http-equive="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Laravel</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+ 
+    <!-- Styles -->
+    <style>
+        html, body {
+            background-color: #fff;
+            color: #636b6f;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 200;
+            height: 100vh;
+            margin: 0;
+        }
+ 
+        .full-height {
+            height: 100vh;
+        }
+ 
+        .flex-center {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+        }
+ 
+        .position-ref {
+            position: relative;
+        }
+ 
+        .top-right {
+            position: absolute;
+            right: 10px;
+            top: 18px;
+        }
+ 
+        .content {
+            text-align: center;
+        }
+ 
+        .title {
+            font-size: 84px;
+        }
+ 
+        .links > a {
+            color: #636b6f;
+            padding: 0 25px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .1rem;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+ 
+        .m-b-md {
+            margin-bottom: 30px;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="flex-center position-ref full-height">
+    @if (Route::has('login'))
+      <div class="top-right links">
+      @if (Auth::check())
+        <a href="{{ url('/home') }}">HOME</a>
+      @else
+        <a href="{{ url('/login') }}">LOGIN</a>
+        <a href="{{ url('/register') }}">REGISTER</a>
+      @endif
+      </div>
+    @endif
+      <div class="content">
+        <div class="title m-b-md">
+        Laravel
+        </div>
+        <div class="links">
+          <a href="https://laravel.com/docs">Docs</a>
+          <a href="https://laracasts.com">Laracasts</a>
+          <a href="https://laravel-news.com">News</a>
+          <a href="https://blog.laravel.com">Blog</a>
+          <a href="https://nova.laravel.com">Nova</a>
+          <a href="https://forge.laravel.com">Forge</a>
+          <a href="https://vapor.laravel.com">Vapor</a>
+          <a href="https://github.com/laravel/laravel">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+-----------------
+@で始まる文は、Laravelに組み込まれているテンプレートエンジンを使って書かれたソ
+ースコード。
+Laravelでは、PHPをそのまま使ってWebページの表示を作成することもできるが、内蔵
+するBladeテンプレートエンジンをつかうほうがはるかに多い。
+viewsフォルダの中にテンプレートファイルが用意され、それをview関数が読み込んで
+表示しているという仕組み。
+==================================
+
+＠ルート情報を追加する
+/* routes/web.php */
+Route::get('hello, function() {
+  return <<<EOF
+<html>
+<body>
+<h1>Hello</h1>
+<p>This is sample page.</p>
+</body>
+</html>
+==================================
+
+＠HTMLを出力する
+Route::getの第2引数にHTMLをリターンするクロージャを指定することで、HTMLがその
+ままWebブラウザに送られる。
+-----------------
+Rouge::get('hoge', function() {
+  return '<html><body>ねこ</body></html>';
+});  
+==================================
+
+＠ヒアドキュメントを使う
+$html = <<<EOF
+<html>
+<head>
+<title>Hello</title>
+<style>
+body {
+  font-size: 16pt; 
+  color:#999;
+}
+h1 {
+  font-size: 100pt;
+  text-align: right;
+  color: #eee;
+  margin: -40px 0px -50px 0px;
+}
+</style>
+</head>
+<body>
+  <h1>Hello</h1>
+  <p>This is sample page.</p>
+  <p>これは、サンプルでつくったページです。</p>
+</body>
+</html>
+EOF;
+
+Route::get('hello', function () use ($html) {
+  return $html;
+});
+-----------------
+このように、Route::getの働きとして「HTMLコードをreturnする関数を用意すれば、そ
+のままWebページが表示される」という仕組み。
+==================================
+
+＠ルートパラメータの利用
+Route::getでは、アクセスする際にパラメータを設定し、値を渡すことができる。
+-----------------
+Route::get('/○○/{パラメータ}', function($受け取る変数) {...});
+-----------------
+第1引数のアドレス部分に、{パラメータ}という形でパラメータを用意する。
+{パラメータ}に指定された部分がパラメータとして取り出せるようになる。
+第2引数のクロージャでは、パラメータの値を受け取る変数を引数として用意。
+パラメータと同じ名前である必要はない。
+パラメータは複数用意することができる。
+----------------------------------
+＊パラメータを利用する。
+-----------------
+Route::get('hello/{msg}', function($msg) {
+$html = <<<EOF
+  <html>
+  <head>
+  <meta charset="utf8">
+  <title>Hello</title>
+  <style>
+  body {
+    font-size: 16pt; 
+    color:#999;
+  }
+  h1 {
+    font-size: 100pt;
+    text-align: right;
+    color: #eee;
+    margin: -40px 0px -50px 0px;
+  }
+  </style>
+  </head>
+  <body>
+    <h1>Hello</h1>
+    <p>{$msg}</p>
+    <p>これは、サンプルでつくったページです。</p>
+  </body>
+  </html>
+EOF;
+});
+----------------------------------
+＊Route::getのパラメータについて
+上記の例では
+第1引数  "hello/{msg}"
+第2引数  function($msg) { ... }
+-----------------
+これは、複数のパラメータでも同じ
+Route::get('hello/{id}/{pass}', function($id, $pass) { ... }};
+これで2つのパラメータ引数を利用できる。
+==================================
+
+＠必須パラメータと任意パラメータ
+ルートをパラメタ指定した場合、基本的に必須パラメータであり、パラメータを指定せ
+ずにアクセスするとエラーとなる。
+パラメータをつけずともエラーにならないパラメータが「任意パラメータ」。
+任意パラメータは、末尾に「?」をつけて宣言する。
+第2引数の関数では、仮引数にデフォルト値を設定し、引数が渡されなくても処理でき
+るようにしておく。
+-----------------
+Route::get('hello/{msg?}', function($msg='no message.') { ... }
+==================================
+
+2-2 コントローラの利用
+
+＠MVCとコントローラ
+ルーティングは、アクセスしたアドレスを元に処理を割り振る機能。
+呼び出される「具体的な処理」を実装するのがコントローラ。
+----------------------------------
+＊MVCアーキテクチャ
+MVCは、「Model-View-Controller」の略。
+アプリケーションの処理を、3つの要素として組み合わせていく考え方。
+-----------------
+モデル
+データ処理全般を担当。
+具体的にはデータベースアクセスに関する処理。
+-----------------
+ビュー
+画面表示を担当。
+テンプレートなど。
+-----------------
+コントローラ
+全体の制御を担当。
+必要に応じてモデルを使ってデータを取得したり、ビューを利用して画面表示を作成す
+る。
+-----------------
+モデルやビューは特定の機能に特化したもので、コントローラは処理全体を制御する。
+モデルやビューは不要であれば用意しなくてもよいが、コントローラは、ないと処理そ
+のものが実行できない。
+==================================
+
+＠コントローラの作成
+> php artisan make:controller HelloController
+でHelloControllerクラスが作成される。
+----------------------------------
+＊artisanのmake:controllerについて
+artisanコマンドは以下の形式で実行する。
+-----------------
+php artisan コマンド
+-----------------
+コントローラの作成の場合は、
+php artisan make:controller コントローラ名
+これで、指定した名前でコントローラが作成される。
+コントローラは、通常、○○Controllerという名前にする。
+==================================
+
+＠HelloController.php
+コントローラは、app/Controllersフォルダに作成される。
+-----------------
+<?php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class HelloController extends Controller
+{
+  //
+}
+-----------------
+これが、コントローラの基本ソースコード。
+----------------------------------
+＊Controllers名前空間
+コントローラは、クラスとして作成される。
+このクラスは、App\Http\Controllers名前空間に配置される。
+名前空間とは、クラスを階層的に整理するための仕組み。
+フォルダを使って階層的にファイルを整理するのと同じ。
+-----------------
+ここでは、App\Http\Controllersという名前空間が使われている。
+フォルダ構成に沿って名前空間が指定されている。
+-----------------
+namespace App\Http\Controllers
+
+
+
+
+
+    
+
+    
+        
+            
+            
