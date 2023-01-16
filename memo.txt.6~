@@ -1,0 +1,1508 @@
+##### PHPフレームワーク　Lravel入門 第2版 （掌田先生）########################
+/*
+よく登場する<style>タグ
+
+<style>
+body {
+  font-size: 16pt;
+  color: #999;
+}
+h1 {
+  font-size: 100pt;
+  text-align: right;
+  color: #f6f6f6;
+  margin: -50px 0 -100px 0px;
+}
+</style>
+
+*/
+
+Chapter 1 Laravelを準備する
+
+Chapter 2 ルーティングとコントローラ
+
+＠ルーティング
+特定のアドレスにアクセスしたときに、どの処理を呼び出して実行するかを管理するの
+が「ルーティング」。
+==================================
+
+＠Laravelのファイルについて
+.editorConfig
+エディタに関する汎用設定ファイル
+-----------------
+.env、.env.example
+動作kな教に関する設定情報
+-----------------
+.gitattributes、gitignore
+Git利用に関する情報
+-----------------
+.styleci.yml
+StyleCIコードチェッカーのファイル
+-----------------
+artisan
+artisanコマンド
+-----------------
+composer.json、composer.lock
+composerの利用に関するもの
+-----------------
+package.json、package-lock.json
+JavaScriptのパッケージ管理ツール（npm）で利用するもの
+-----------------
+phpunit.xml
+PHPUnitに関するもの
+-----------------
+server.php
+サーバ起動時に利用されるプログラム
+-----------------
+yarn.lock
+yarnというパッケージマネージャが使うファイル（自動生成される）
+==================================
+
+＠Laravelのフォルダ
+app
+アプリケーションのプログラム部分がまとめられるところ。
+ここにスクリプトファイルを追加していく。
+-----------------
+bootstrap
+アプリケーション実行時に最初に行われる処理がまとめられている。
+-----------------
+config
+設定関係のファイルがまとめられている
+-----------------
+database
+データベース関連のファイルがまとめられている
+-----------------
+public
+公開フォルダ。
+JavaScriptやスタイルシートなど、外部にそのまま公開されるファイルがまとめられて
+いる。
+-----------------
+resources
+リソース関係の配置場所。
+プログラムが利用するリソースファイルが用意される。
+テンプレートファイルなどが用意される。
+-----------------
+routes
+ルート情報の保存場所。
+アクセスするアドレスに割り当てられるプログラムの情報などが記されている。
+-----------------
+storage
+ファイルの保存場所。
+アプリケーションのプログラムが保存するファイルなどが置かれる。
+ログファイルなどはここに保存される。
+-----------------
+tests
+ユニットテスト関係のファイルが用意される。
+-----------------
+vendor
+フレームワーク本体のプログラムがまとめられている。
+==================================
+
+＠appフォルダについて
+Laravelアップロードに用意されているフォルダの中で、もっとも重要で利用頻度が高
+いのがappフォルダ。
+appフォルダは、Laravelアプリケーションの「アプリケーション」部分のプログラムが
+配置される。
+----------------------------------
+＊appフォルダ内のフォルダ
+Console
+コンソールプログラムを配置。
+-----------------
+Exceptions
+例外に関する処理を配置。
+-----------------
+Http
+ウェブアプリケーションにアクセスしたときの処理をまとめておくところ。
+アプリケーションの基本転記なプログラムはここに作成。
+-----------------
+Providers
+プロバイダと呼ばれるプログラムを配置。
+-----------------
+User.php
+ユーザ認証に関するスクリプト。
+==================================
+
+＠ルーティングと「routes」フォルダ
+Laravelは、特定のアドレスにアクセスすると、そのアドレスに割り付けられたプログ
+ラムが実行され、それによって必要な処理や画面表示が行われる。
+-----------------
+このように「○○というアドレスにアクセスしたら、××という処理を呼び出す」とい
+う関連付けを行っているのが「ルーティング」。
+ルーティングは、アクセスを設定している情報（ルート）を管理する機能。
+==================================
+
+＠routesフォルダ
+デフォルトでいくつかのスクリプトファイルが用意されエイル。
+-----------------
+api.php
+APIのルーティング。
+ユーザ認証等のように、プログラム内から利用するAPIの機能を特定のアドレスに割り
+当てるのに利用される。
+-----------------
+channels.php
+ブロードキャストチャンネルのためのルーティング。
+-----------------
+console.php
+コンソールプログラムのためのルーティング。
+-----------------
+web.php
+一般的なWebページとしてアクセスするためのルーティング。
+----------------------------------
+基本的にWebページとして公開するものは、web.phpにルート情報を記述する。
+==================================
+
+＠ルート情報の記述
+/* routes/web.php */
+<?php
+Route::get('/'', function() {
+  return view('welcome');
+});
+----------------------------------
+＊ルート情報の基本（GETアクセス）
+Route::get(アドレス, 関数など);
+-----------------
+GETアクセスのルート情報は、Routeクラスのget静的メソッドで設定する。
+第1引数に割り当てるアドレスを、第2引数にそれにより呼び出される処理。
+第2引数には、関数を指定することも「コントローラ」を指定することもある。
+==================================
+
+＠トップページのルート情報
+第1引数は'/'、例では第2引数は関数となっている。
+-----------------
+function() {
+  return 値;
+}
+-----------------
+引数なしのクロージャ（無名関数）となっている。
+returnされる値がそのアドレスにアクセスした際に表示される内容となる。
+この例では、view関数を使って戻り値を用意している。
+-----------------
+view(テンプレート名)
+-----------------
+viewは、指定したテンプレートファイルをロードし、レンダリングして返す働きをする
+。
+viewで引数にテンプレートを指定すると、それがレンダリングされて返され、ブラウザ
+に表示さえる。
+----------------------------------
+＊welcomeテンプレートについて
+return view('welcome');
+で、welcome.blade.phpテンプレートファイルをレンダリングして表示する。
+-----------------
+テンプレートファイルは、resources/viewsフォルダに配置。
+-----------------
+/* resources/views/welcome.blade.php */
+<!doctype html>
+<html lang="{{ app()->getLocale() }}">
+  <head>
+    <meta charset="utf-8">
+    <!-- バージョン8以降のIEで使用できる互換モード -->
+    <meta http-equive="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Laravel</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+ 
+    <!-- Styles -->
+    <style>
+        html, body {
+            background-color: #fff;
+            color: #636b6f;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 200;
+            height: 100vh;
+            margin: 0;
+        }
+ 
+        .full-height {
+            height: 100vh;
+        }
+ 
+        .flex-center {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+        }
+ 
+        .position-ref {
+            position: relative;
+        }
+ 
+        .top-right {
+            position: absolute;
+            right: 10px;
+            top: 18px;
+        }
+ 
+        .content {
+            text-align: center;
+        }
+ 
+        .title {
+            font-size: 84px;
+        }
+ 
+        .links > a {
+            color: #636b6f;
+            padding: 0 25px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .1rem;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+ 
+        .m-b-md {
+            margin-bottom: 30px;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="flex-center position-ref full-height">
+    @if (Route::has('login'))
+      <div class="top-right links">
+      @if (Auth::check())
+        <a href="{{ url('/home') }}">HOME</a>
+      @else
+        <a href="{{ url('/login') }}">LOGIN</a>
+        <a href="{{ url('/register') }}">REGISTER</a>
+      @endif
+      </div>
+    @endif
+      <div class="content">
+        <div class="title m-b-md">
+        Laravel
+        </div>
+        <div class="links">
+          <a href="https://laravel.com/docs">Docs</a>
+          <a href="https://laracasts.com">Laracasts</a>
+          <a href="https://laravel-news.com">News</a>
+          <a href="https://blog.laravel.com">Blog</a>
+          <a href="https://nova.laravel.com">Nova</a>
+          <a href="https://forge.laravel.com">Forge</a>
+          <a href="https://vapor.laravel.com">Vapor</a>
+          <a href="https://github.com/laravel/laravel">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+-----------------
+@で始まる文は、Laravelに組み込まれているテンプレートエンジンを使って書かれたソ
+ースコード。
+Laravelでは、PHPをそのまま使ってWebページの表示を作成することもできるが、内蔵
+するBladeテンプレートエンジンをつかうほうがはるかに多い。
+viewsフォルダの中にテンプレートファイルが用意され、それをview関数が読み込んで
+表示しているという仕組み。
+==================================
+
+＠ルート情報を追加する
+/* routes/web.php */
+Route::get('hello, function() {
+  return <<<EOF
+<html>
+<body>
+<h1>Hello</h1>
+<p>This is sample page.</p>
+</body>
+</html>
+==================================
+
+＠HTMLを出力する
+Route::getの第2引数にHTMLをリターンするクロージャを指定することで、HTMLがその
+ままWebブラウザに送られる。
+-----------------
+Rouge::get('hoge', function() {
+  return '<html><body>ねこ</body></html>';
+});  
+==================================
+
+＠ヒアドキュメントを使う
+$html = <<<EOF
+<html>
+<head>
+<title>Hello</title>
+<style>
+body {
+  font-size: 16pt; 
+  color:#999;
+}
+h1 {
+  font-size: 100pt;
+  text-align: right;
+  color: #eee;
+  margin: -40px 0px -50px 0px;
+}
+</style>
+</head>
+<body>
+  <h1>Hello</h1>
+  <p>This is sample page.</p>
+  <p>これは、サンプルでつくったページです。</p>
+</body>
+</html>
+EOF;
+
+Route::get('hello', function () use ($html) {
+  return $html;
+});
+-----------------
+このように、Route::getの働きとして「HTMLコードをreturnする関数を用意すれば、そ
+のままWebページが表示される」という仕組み。
+==================================
+
+＠ルートパラメータの利用
+Route::getでは、アクセスする際にパラメータを設定し、値を渡すことができる。
+-----------------
+Route::get('/○○/{パラメータ}', function($受け取る変数) {...});
+-----------------
+第1引数のアドレス部分に、{パラメータ}という形でパラメータを用意する。
+{パラメータ}に指定された部分がパラメータとして取り出せるようになる。
+第2引数のクロージャでは、パラメータの値を受け取る変数を引数として用意。
+パラメータと同じ名前である必要はない。
+パラメータは複数用意することができる。
+----------------------------------
+＊パラメータを利用する。
+-----------------
+Route::get('hello/{msg}', function($msg) {
+$html = <<<EOF
+  <html>
+  <head>
+  <meta charset="utf8">
+  <title>Hello</title>
+  <style>
+  body {
+    font-size: 16pt; 
+    color:#999;
+  }
+  h1 {
+    font-size: 100pt;
+    text-align: right;
+    color: #eee;
+    margin: -40px 0px -50px 0px;
+  }
+  </style>
+  </head>
+  <body>
+    <h1>Hello</h1>
+    <p>{$msg}</p>
+    <p>これは、サンプルでつくったページです。</p>
+  </body>
+  </html>
+EOF;
+});
+----------------------------------
+＊Route::getのパラメータについて
+上記の例では
+第1引数  "hello/{msg}"
+第2引数  function($msg) { ... }
+-----------------
+これは、複数のパラメータでも同じ
+Route::get('hello/{id}/{pass}', function($id, $pass) { ... }};
+これで2つのパラメータ引数を利用できる。
+==================================
+
+＠必須パラメータと任意パラメータ
+ルートをパラメタ指定した場合、基本的に必須パラメータであり、パラメータを指定せ
+ずにアクセスするとエラーとなる。
+パラメータをつけずともエラーにならないパラメータが「任意パラメータ」。
+任意パラメータは、末尾に「?」をつけて宣言する。
+第2引数の関数では、仮引数にデフォルト値を設定し、引数が渡されなくても処理でき
+るようにしておく。
+-----------------
+Route::get('hello/{msg?}', function($msg='no message.') { ... }
+==================================
+
+2-2 コントローラの利用
+
+＠MVCとコントローラ
+ルーティングは、アクセスしたアドレスを元に処理を割り振る機能。
+呼び出される「具体的な処理」を実装するのがコントローラ。
+----------------------------------
+＊MVCアーキテクチャ
+MVCは、「Model-View-Controller」の略。
+アプリケーションの処理を、3つの要素として組み合わせていく考え方。
+-----------------
+モデル
+データ処理全般を担当。
+具体的にはデータベースアクセスに関する処理。
+-----------------
+ビュー
+画面表示を担当。
+テンプレートなど。
+-----------------
+コントローラ
+全体の制御を担当。
+必要に応じてモデルを使ってデータを取得したり、ビューを利用して画面表示を作成す
+る。
+-----------------
+モデルやビューは特定の機能に特化したもので、コントローラは処理全体を制御する。
+モデルやビューは不要であれば用意しなくてもよいが、コントローラは、ないと処理そ
+のものが実行できない。
+==================================
+
+＠コントローラの作成
+> php artisan make:controller HelloController
+でHelloControllerクラスが作成される。
+----------------------------------
+＊artisanのmake:controllerについて
+artisanコマンドは以下の形式で実行する。
+-----------------
+php artisan コマンド
+-----------------
+コントローラの作成の場合は、
+php artisan make:controller コントローラ名
+これで、指定した名前でコントローラが作成される。
+コントローラは、通常、○○Controllerという名前にする。
+==================================
+
+＠HelloController.php
+コントローラは、app/Controllersフォルダに作成される。
+-----------------
+<?php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class HelloController extends Controller
+{
+  //
+}
+-----------------
+これが、コントローラの基本ソースコード。
+----------------------------------
+＊Controllers名前空間
+コントローラは、クラスとして作成される。
+このクラスは、App\Http\Controllers名前空間に配置される。
+名前空間とは、クラスを階層的に整理するための仕組み。
+フォルダを使って階層的にファイルを整理するのと同じ。
+-----------------
+ここでは、App\Http\Controllersという名前空間が使われている。
+フォルダ構成に沿って名前空間が指定されている。
+-----------------
+namespace App\Http\Controllers
+----------------------------------
+＊useによるクラスのインポート
+use Illuminate\Http\Request;
+-----------------
+ここではIlluminate\Httpパッケージの「Request」を使える状態にしている。
+まだ必要ないが、このあと多用されるので、デフォルトでuse文が追加されている。
+----------------------------------
+＊クラスの定義
+class HelloController extends Controller
+{
+  //
+}
+-----------------
+コントローラクラスは、Controllerクラスを継承して作成する。
+通常、名前は○○Controllerとする。
+==================================
+
+＠アクションを追加する
+コントローラに用意される処理は「アクション」と呼ばれる。
+これはメソッドの形。
+アクションは、コントローラが行う処理で、複数用意できる。
+-----------------
+/* App/Http/Controllers/HelloController.php */
+<?php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+public class HelloContoller extends Controller
+{
+  public function index() 
+  {
+    return <<<EOF
+<html>
+<title>HelloIndex</title>
+<head>
+  <style>
+  body {
+    font-size: 16pt; 
+    color:#999;
+  }
+  h1 {
+    font-size: 100pt;
+    text-align: right;
+    color: #eee;
+    margin: -40px 0px -50px 0px;
+  }
+  </style>
+</head>
+<body>
+<h1>Index</h1>
+<p>これは、Helloコントローラのindexアクションです。</p>
+</body>
+</html>
+EOF;
+  }  
+}
+-----------------
+アクションメソッドでは、returnでHTMLのソースコードを返している。
+これが、ブラウザへ返され、表示されることになる。
+----------------------------------
+＊ルートの用意
+アクションにルートを割り当てる必要がある。
+-----------------
+/* routes/web.php */
+Route::get('hello', [HelloCotroller::class, 'index']);
+-----------------
+Ruoute::getを使ってルート情報を設定している。
+==================================
+
+＠ルートパラメータの利用
+/* App/Http/Controllers/HelloController.php */
+class HelloController extends Controller
+{
+  public function index($id='noname', $pass='unknown')
+  {
+    return <<<EOF
+<html>
+<title>Hello/Index</title>
+<head>
+  <style>
+  body {
+    font-size: 16pt; 
+    color:#999;
+  }
+  h1 {
+    font-size: 100pt;
+    text-align: right;
+    color: #eee;
+    margin: -40px 0px -50px 0px;
+  }
+  </style>
+</head>
+<body>
+<h1>Index</h1>
+<p>これは、Helloコントローラのindexアクションです。</p>
+<ul>
+<li>ID: {$id}</li>
+<li>PASS: {$pass}</li>
+</ul>
+</body>
+</html>
+EOF;
+-----------------
+/* routes/web.php */
+Route::get('hello/{id?}/{pass?}', [HelloController::class, 'index']);
+-----------------
+＊ルートパラメータの設定
+{id?}、{pass?}と、任意パラメータとなっている。
+----------------------------------
+＊アクションメソッドの設定
+-----------------
+public function index($id="noname", $pass="unknown") { ... }
+-----------------
+任意パラメータなので、デフォルト引数となっている。
+==================================
+
+＠複数のアクションの利用
+コントローラには、複数のアクションを記述できる。
+/* App/Http/Controllers/HelloController.php */
+...
+global $head, $style, $body, $end;
+$head ='<html><head>';
+$style= <<<EOF
+ <style>
+  body {
+    font-size: 16pt; 
+    color:#999;
+  }
+  h1 {
+    font-size: 100pt;
+    text-align: right;
+    color: #eee;
+    margin: -40px 0px -50px 0px;
+  }
+  </style>
+EOF;
+$body = '</head><body>';
+$end = '</body></html>';
+
+function tag($tag, $txt) 
+{
+  return "<{$tag}>" . $txt . "</{$tag}>" ;
+}
+
+class HelloController extends Controller
+{
+  public function index($id="noname", $pass="unknown") 
+  {
+    global $head, $style, $body, $end;
+    $html = $head . tag('title', 'Hello/Index') . $style .
+            $body
+            . tag('h1', 'index') . tag('p', 'this is Index page')
+            . '<a href="/hello/other">go to other page.</a>'
+            . $end;
+    return $html;   
+  }
+  
+  public function other()
+  {
+    global $head, $style, $body, $end;
+    $html = $head . tag('title', 'Hello/Other') . $style
+                  . $body
+                  . tag('h1', 'Other')
+                  . tag('p', 'this is other page.')
+                  . $end;
+    return $html;
+  }
+}
+-----------------
+/* routes/web.php */
+Route::get('hello', [HelloController::class, 'index']);
+Route::get('hello/other', [HelloController::class, 'other']);
+----------------------------------
+＊複数ページの対応
+ページが複数になっても、基本的な実装は何ら変わらない。
+注意すべきは、割り当てるアドレス。
+----------------------------------
+＊アクションとアドレスの関係
+アドレスとコントローラまたはアクションの関連は以下のように対応させるのが一般的
+。
+-----------------
+http://アプリケーションのアドレス/コントローラ/アクション
+-----------------
+ルートの設定を独自のやり方で割り当てること自体は問題ないが、「割り当て方式が統
+一されない」と問題。
+どのようなやり方であれ、アプリケーション全体で首尾一貫させること。
+----------------------------------
+
+＠シングルアクションコントローラ
+1つのコントローラに1つのアクションだけを用意する」という設計もある。
+この場合、「シングルアクションコントローラ」としてクラスを作成する。
+シングルアクションコントローラは、特別なクラスというわけではない。
+一般的なアクションメソッドの代わりに「__invoke」というメソッドを使って実装する
+。
+----------------------------------
+＊シングルアクションコントローラの基本形
+class コントローラ extends Controller
+{
+  public function __invoke() 
+  {
+    ....
+  }
+}
+-----------------
+__invoke以外は、アクションメソッドは用意しない。
+メソッドは追加できるが、それらはアクションとしての利用はできない。
+-----------------
+シングルアクションコントローラとして作成されたコントローラは、ルート情報の設定
+も少し変わってくる。
+-----------------
+Route::get('アドレス', 'コントローラ名');
+-----------------
+このようにコントローラ名だけを指定する。
+アクションの指定はしない。
+アドレスにアクセスると、コントローラのinvokeが実行される仕組み。
+----------------------------------
+＊HelloControllerをシングルコントローラに
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class HelloController extends Controller
+{
+  public function __invoke()
+  {
+    return <<<EOF
+<DOCTYPE html>
+<html>
+<head>
+<title>Hello</title>
+<style>
+  body {
+    font-size: 16pt; 
+    color:#999;
+  }
+  h1 {
+    font-size: 100pt;
+    text-align: right;
+    color: #eee;
+    margin: -40px 0px -50px 0px;
+  }
+</style>
+</head>
+<body>
+<h1>Single Action</h1>
+<p>これは、シングルアクションコントローラのアクションです。</p>
+</body>
+</html>
+EOF;
+  }
+}
+-----------------
+/* routes/web.php */
+Route:get('hello', HelloController::class);
+-----------------
+getの第2引数には、クラスしか記述しない。
+これにより、__invokeメソッドが実行される。
+----------------------------------
+＊invokeはPHPの基本機能
+__invokeメソッドは、Laravelの機能ではなく、PHPのクラスに用意されている「マジッ
+クメソッド」と呼ばれるメソッド。
+マジックメソッドは、あらかじめ役割を与えられているメソッドで、一般に__で始まる
+名前。
+__invokeはそのクラスのインスタンスを関数的に実行するためのもので、インスタンス
+に()を付けて関数をとして呼び出すと、インスタンス内の__invokeが実行される。
+したがって、コントローラに限らず、一般的なクラスでも「インスタンスをそのまま関
+数のように実行させたい」場合に利用される。
+==================================
+
+＠リクエストとレスポンス
+ここまでのアクションメソッドは、引数も特に用意されて以内が実際のWebアクセスで
+は、内部で非常に多くの情報を槍としている。
+-----------------
+リクエストとレスポンスの情報は、Laravelでも利用することができる。
+これはIluminate\Http名前空間に用意されているRequestクラス、Responseクラスとし
+て提供されている。
+これらのオブジェクトには、リクエストまたはレスポンスに関する情報を保管するプロ
+パティや、それを操作するメソッドが用意されている。
+==================================
+＠RequestとResponse
+/* App/Http/Controllers/HelloController.php */
+<?php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+
+class HelloController extends Controller
+{
+  public function index(Request $request, Response $response)
+  {
+
+    $html = <<<EOF
+<DOCTYPE html>
+<html>
+<hea    return <<<EOF
+<html>
+<title>HelloIndex</title>
+<head>
+  <style>
+  body {
+    font-size: 16pt; 
+    color:#999;
+  }
+  h1 {
+    font-size: 100pt;
+    text-align: right;
+    color: #eee;
+    margin: -40px 0px -50px 0px;
+  }
+  </style>
+</head>
+<body>
+<h1>Hello</h1>
+<h3>Request</h3>
+<pre>{$request}</pre>
+<h3>Response</h3>
+<pre>{$response}</pre>
+</body>
+</html>
+EOF;
+    $response->setContent($html);
+    return $response;
+  }
+}
+-----------------
+/* routes/web.php */
+Route::get('hello', [HelloController::class, 'index']);
+-----------------
+クライアントからヘッダー情報が、レスポンスからはキャッシュコントロールや日付な
+どの情報が得られているのがわかる。
+----------------------------------
+＊アクションメソッドの引数定義
+まずは、RequestとResponseを利用するためuse文。
+-----------------
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+-----------------
+Requestはデフォルトで用意されているので、それにResponseを追加。
+これらの利用はアクションメソッドで行う。
+-----------------
+public function index(Request $request, Response $response) { ... } 
+-----------------
+引数にRequestとResponseを追加するだけでインスタンスが用意され、利用可能となる
+。
+----------------------------------
+＊Requestの主なメソッド
+-----------------
+$request->url()
+urlは、アクションしたURLを返す。
+ただし、クエリ文字列は省略される。
+-----------------
+$request->fullUrl()
+fullUrlは完全なアドレスを返す（クエリ文字列も含む）。
+-----------------
+$request->path()
+pathは、ドメイン下のぱす部分だけを返す。
+----------------------------------
+＊Responseの主なメソッド
+-----------------
+$response->status()
+アクセスに関するステータスコードを返す。
+正常なら200。
+-----------------
+$response->content();
+$response->setContent(値);
+コンテンツの取得・設定を行うもの。
+contentはコンテンツを取得
+setContentは引数の値にコンテンツを変更する。
+----------------------------------
+＊サービスとDI
+Laravelでは、アクセスメソッドの引数にRequestやResponseを追加するだけで、それら
+が利用できるようになる。
+これは「サービス」と「サービスコンテナ」の機能。
+Laravelでは各種の機能が「サービス」と呼ばれる形のプログラムとして用意されてい
+る。
+このサービスは、「サービスコンテナ」と呼ばれるものに組み込まれ、管理されている
+。
+-----------------
+アクセスメソッドに引数を追加すると、サービスコンテナによって、対応するクラスの
+インスタンスがその引数に渡され、利用できるようになる。
+この機能は「メソッドインジェクション」と呼ばれる。
+-----------------
+このサービスコンテナのように、必要に応じて自動的に機能を組み込む仕組みは、Lara
+vel以外でも多用されている。
+一般に「DI（Dependency Injection）」と呼ばれ、関連する機能を自動的に組み込む働
+きを実現する。
+DI技術により、メソッドに引数を追加するだけで、自動的にサービスが組み込まれる、
+メソッドインジェクションが実現される。
+==================================
+
+chaper 3 ビューとテンプレート
+
+＠PHPテンプレートの利用
+Laravelでは、PHPスクリプトファイルで「テンプレート」を作成し、表示することがで
+きる。
+またBladeという独自の高機能なテンプレート機能も持っている。
+==================================
+
+＠ビューについて
+コントローラで、標示内容をテキストとして変数に持たせるようなやり方では、複雑な
+表現はできない。
+本格的なウェブページを作るためには、HTMLを使ってそのまま表示内容を記述できるよ
+うな仕組みが必要。
+こうした用途のために用意されているのが「テンプレート」。
+テンプレートは、Laravelの「ビュー（view）」を担当する重要な部品。
+-----------------
+Laravelでは、Model-View-Controller（MVC）アーキテクチャに基づいて設計されてい
+る。
+ビューは、画面表示を担当、画面の表示に関する部分を簡単にわかりやすい形で作れる
+ようにしている。
+そのために採用されているのがテンプレート。
+-----------------
+テンプレートは、画面表示のベースとなるもの。
+あるアドレスにアクセスすると、コントローラはそのアドレスで使われるテンプレート
+を読み込んで表示する。
+ただし、読み込まれたHTMLコードがそのまま表示されるわけではない。
+==================================
+
+＠レンダリングの考え方
+テンプレートには、あらかじめ変数や処理などが記述されている。
+Laravelでは、テンプレートを読み込んだ後、その中に必要な情報をはめ込むなどして
+、実際の表示を生成することができる。
+この作業を「レンダリング」という。
+-----------------
+レンダリングにより、テンプレート内の処理は変数などが実行され、処理結果や変数の
+値が、実際の表示として組み込まれていく。
+レンダリングにより、コントローラで用意しておいた値や変数などを組み込んだHTMLソ
+ースコードが生成される。
+-----------------
+レンダリングは「テンプレートエンジン」によって行われる。
+テンプレートエンジンには、色々なものがある。
+-----------------
+Laravelでは、大きく2つのテンプレートが用いられる。
+1つがPHPソースコードをそのままテンプレートとして使う方法。
+もう1つが「Blade」と呼ばれるテンプレートエンジンを使う方法。
+==================================
+
+＠PHPテンプレートを作る
+テンプレートはresources/viewsフォルダに配置する。
+テンプレートは、各コントローラごとにフォルダを用意し、その中にコントローラで使
+うテンプレートをまとめておくのが一般的。
+-----------------
+/* resources/views/hello/index.php */
+<html>
+<head>
+<title>Hello/Index</title>
+<style>
+body {
+  font-size: 16pt;
+  color: #999;
+}
+h1 {
+  font-size: 100pt;
+  text-align: right;
+  color: #f6f6f6;
+  margin: -50px 0 -100px 0px;
+}
+</style>
+</head>
+<body>
+<h1>Index</h1>
+<p>This is a sample page with php-templage.</p>
+</body>
+</html>
+==================================
+
+＠ルートの設定でテンプレートを表示する。
+/* routes/web.php */
+Route::get('hello', function() {
+  return view('hello.index');
+});
+-----------------
+コントローラは使っていない。
+ルート情報の設定の部分で、直接テンプレートを使っている。
+----------------------------------
+＊viewメソッドについて
+ここでは第2引数のクロージャ内でviewメソッドを使っている。
+viewは、引数にテンプレート名を指定すると、そのテンプレートを読み込んで返す。
+viewは以下のような形で呼び出す。
+-----------------
+view('フォルダ名.ファイル名')
+-----------------
+テンプレートは、viewsフォルダから検索される。
+hello.indexとすると、views/hello/inderx.phpを指定したことになる。
+「どのフォルダの何というファイルか」をきちんと指定しなければならない。
+----------------------------------
+＊viewとResponse
+viewメソッドの戻り値をreturnすると、そのままテンプレートの内容が表示される。
+viewが返すのは、Responseインスタンス。
+このResponseには指定したテンプレートのレンダリング結果がコンテンツとして設定さ
+れている。
+結果としては「viewの戻り値をそのまま返せばテンプレートの内容が表示される」が、
+「viewによりテンプレートのソースコードがそのまま返されるわけではない。
+==================================
+
+＠コントローラでテンプレートを使う
+/* App/Http/Controllers/HelloController.php */
+public function index()
+{
+  return view('hello.index');
+}
+-----------------
+やっていることは、クロージャを使った方法と同じ。
+Route::getでviewするか、Route::getで呼び出されたアクションメソッド内でビューす
+るかの違いだけ。
+==================================
+
+＠値をテンプレートに渡す
+/* resources/views/hello/index.php */
+<body>
+<h1>Index</h1>
+<p><?php echo $msg; ?></p>
+<p><?php echo date("Y年n月j日"); ?></p>
+</body>
+-----------------
+<?php ?>タグを使ってPHPのスクリプトを記述すれば、そのままスクリプトを実行でき
+る。
+そのためには、コントローラ側からテンプレート側へ、必要な変数などの値を渡さなけ
+ればならない。
+-----------------
+/* App/Http/Controllers/HelloController.php */
+public function index()
+{
+  $data = [
+    'msg'=>'これはコントローラから渡されたメッセージです。'
+  ];
+  return view('hello.index', $data);
+}
+----------------------------------
+＊テンプレートへの値の更け渡し
+ここではindexアクションのviewメソッドで、必要な値をテンプレート側に渡している
+。
+-----------------
+return view(テンプレート, 配列);
+-----------------
+第2引数に渡される配列に格納した値が、そのままテンプレート側に変数として渡され
+る。
+このように、viewのダ2引数では、テンプレート側で使う変数名をキーに指定して値を
+設定する。
+配列なので、いくつでも値を用意して渡すことが可能。
+==================================
+
+＠ルートパラメータをテンプレートに渡す
+アクセス時のアドレスに記述しておいた値が、そのままテンプレートに表示されるよう
+にするには、2つの部分に分けて考える。
+1つはルートパラメータを受け取る部分。
+もう2つ目は値をテンプレートに書き出す部分。
+-----------------
+/* resources/views/hello/index.php */
+<body>
+<h1>Index</h1>
+<p><?php echo $msg; ?></p>
+<p>ID=<?php echo $id; ?></p>
+</body>
+-----------------
+$idという変数を追加して表示させている。
+----------------------------------
+＊アクションの修正
+/* App/Http/Controllers/HelloController.php */
+public function index($id='zero')
+{
+  $data = [
+    'msg'=>'これはコントローラから渡されたメッセージです。',
+    'id=>$id,
+  ];
+  return view('hello.index', $data);
+}
+-----------------
+これにより、ルートパラメタである引数$idの値が、テンプレートで$idという変数で参
+照できるようになる。
+----------------------------------
+＊ルート情報の修正
+/* routes/web.php */
+Route::get('hello/{id?}', [HelloController::class, 'index']);
+-----------------
+{id?}の値が、コントローラのindexアクションメソッドに引数として渡される。
+==================================
+
+＠クエリ文字列の利用
+アクセスするアドレスの情報を利用して値を渡す方法はもう1つある。
+「クエリ文字列」を使う方法。
+クエリ文字列は、ルートパラメタとは受け取り方が違う。
+-----------------
+/* App/Http/Controllers/HelloController.php */
+public function index(Request $req)
+{
+  $data = [
+    'msg'=>'これはコントローラから渡されたメッセージです。',
+    'id'=>$req->id
+  }
+  return view('hello.index', $data);
+}
+-----------------
+引数にRequestインスタンスを渡すようにしている。
+そしてテンプレートに渡すidの値は、$req->idというふうに取り出している。
+このidがクエリ文字列で渡される値。
+-----------------
+ルート情報を修正する。
+-----------------
+/* routes/web.php */
+Route::get('hello', [HelloContgroller::class, 'index']);
+-----------------
+アドレスからルートパラメタが消えている。
+次のようにアクセスする。
+http://localhost:8000/hello?id=query_string_sample
+-----------------
+$id=query_string_sampleというふうにして、このquery_string_sampleが、$req->idと
+して取り出されている。
+このように、クエリ文字列を使って渡された値は「$req->キー名」という形で取り出す
+ことができる。
+ルートパラメタと異なり、ルート情報には何ら特別な記述は要らない。
+アクションでRequest引数を用意するだけでよい。
+==================================
+
+3-2 Bladeテンプレートを使う
+
+＠Bladeを使う
+PHPスクリプトファイルをそのままテンプレートとして使うのは、記述が煩雑になるき
+らいがある。
+ちょっとした表示でも<?php echo xxx; ?>としなければならない。
+また、PHPタグが<>を使っており、一般的なHTMLタグと同じ形式になっているため、HTM
+L作成ツールなどでは、タグ構造が崩れたりする。
+また、ページを分割してまとめてレイアウトする機能もない。
+HTMLとPHPで手作業でレイアウトするしかない。
+-----------------
+Laravelに独自に用意されているBladeテンプレートエンジンは、非常に効率的なレイア
+ウトを作成していくための機能を持っている。
+テンプレートを継承してあらたなテンプレートを定義したり、レイアウトの一部をセク
+ションとしてはめ込むなどして、レイアウトを作っていくことができる。
+----------------------------------
+＊テンプレートを作る
+Bladeテンプレートも、PHPテンプレートと同様、resources/viewsフォルダに配置する
+。
+Bladeテンプレートファイルは、xx.blade.phpという名前でファイルを用意する。
+-----------------
+/* resources/views/hello/index.blade.php */
+<html>
+<head>
+<title>Hello/Index</title>
+<style>
+body {
+  font-size: 16pt;
+  color: #999;
+}
+h1 {
+  font-size: 100pt;
+  text-align: right;
+  color: #f6f6f6;
+  margin: -50px 0 -100px 0px;
+}
+</style>
+</head>
+<body>
+<h1>Blade/Index</h1>
+<p>{{ $msg }}</p>
+</body>
+</html>
+-----------------
+基本的な部分は、普通のHTMLと同じ。
+<p>タグの部分の{{ $msg }}は、変数$msgを埋め込んだもの。
+Bladeでは、{{ $変数 }}というようにして、変数をテンプレート内に埋め込むことがで
+きる。
+----------------------------------
+＊アクションの修正
+/* App/Http/Controllers/HelloController.php */
+public function index()
+{
+  $data = [
+    'msg'=>'これはBladeを利用したサンプルです。',
+  ];
+  return view('hello.index', $data);
+}
+-----------------
+/helloにアクセスると、index.blade.phpを使って画面が表示される。
+----------------------------------
+＊index.phpとindex.blade.php、どちらを使う？
+Laravelでは、Bladeテンプレートがあると、それが優先して読み込まれる。
+テンプレート名を「index」と指定してあると、index.phpではなくindex.blade.phpが
+使われる。
+index.blade.phpがない場合は、index.phpが使われる。
+==================================
+
+＠フォームを利用する
+/* resources/views/hello/index.blade.php */
+<body>
+<h1>Blade/Index</h1>
+<p>{{ $msg }}</p>
+<form method="POST" action="/hello">
+  @csrf
+  <input type="text" name="msg">
+  <input type="submit">
+</form>
+</body>
+-----------------
+@csrfは、Bladeディレクティブと呼ばれ、テンプレートに決まったコードを生成して書
+き出す働きをする。
+==================================
+
+＠CSRF対策について
+@csrfは、CSRF対策のために用意されたBladeディレクティブ。
+CSRFは、「Cross Site Request Forgery」と呼ばれる、Webサイト攻撃の1つ。
+スクリプト等を使い、外部からフォームを送信するもので、フォームに大量のコンテン
+ツを送り付けたりするのに用いられる。
+-----------------
+@csrfは、トークンと呼ばれるランダムな文字列を非表示フィールドとして追加する。
+そして、このトークンの値が正しいフォームだけを受け付けるようにする。
+-----------------
+Laravelでは、CSRF対策がなされていないフォームの送信は、例外が発生して受け付け
+られないようになっている。
+したがって、フォームを利用する際は、必ず@csrfをフォーム内に用意しておく必要が
+ある。
+==================================
+
+＠アクションの用意
+今回は、/helloにアクセスしたときの表示と、フォームを送信したときの処理の2つの
+アクションが必要となる。
+-----------------
+/* App/Http/Controllers/HelloController.php */
+class HelloController extends Controller
+{
+  public function index()
+  {
+    $data = [
+      'msg'=>'お名前を入力してください。',
+    ];
+    return view('hello.index', $data);
+  }
+  public function post(Request $req)
+  {
+    $msg = $req->msg;
+    $data = [
+      'msg'=>'こんにちは、' . $msg . 'さん!',
+    ];
+    return view('hello.index', $data);
+  }
+}
+-----------------
+indexアクションは、/helloにアクセスした際の処理。
+postメソッドが、/helloにPOST送信された時の処理。
+Requestインスタンスを引数とし、以下のようにフォームの内容を取り出している。
+-----------------
+$msg = $req->msg;
+-----------------
+name="msg"のフィールドの値は、このように$req->msgで取り出せる。
+フォームで送信された値は、すべてnameのプロパティとして取り出せるようになってい
+る。
+==================================
+
+＠POSTのルート設定
+/* routes/web.php */
+Route::get('hello', [HelloController::class, 'index',]);
+Route::post('hello, [HelloController::class, 'post',]);
+-----------------
+POST送信は、Route::postメソッドで設定する。
+メソッド名が違うだけで、使い方はRoute::getと同じ。
+割り当てるアドレスと、呼び出すアクションをそれぞれ引数に指定する。
+-----------------
+ここでは/helloにHelloControllerクラスのpostメソッドを割り当てている。
+同じアドレスでも、GETとPOSTというようにアクションするメソッドの種類が違えば、
+両方ともに使うことができる。
+----------------------------------
+＊ChromeにおけるTokenMismatchException問題
+@csrfをつければCSRにひっからずにフォーム送信ができるはず、だが、実際に送信する
+と、TokenMismatchException（CSRF対策のトークンの値が合わないエラー）が出ること
+がある。
+開発中は、CSRF対策の機能をOFFにしておく、ということもできる。
+CSRF対策を行っているのは、VerifyCsrfTokenというミドルウェアで、これを使わない
+ように設定すればよい。
+==================================
+
+3-3 Bladeの構文
+
+＠値の表示
+まずは値を埋め込む{{}}から。
+-----------------
+{{ 値・変数・式・関数など }}
+-----------------
+このように{{と}}の間に、文を書くことで、その文が返す値をその場に書き出す。
+値として扱えるものは、関数でもメソッドでも指定できる。
+-----------------
+{{ }}の出力は、基本的にHTMLエスケープ処理される。
+HTMLタグなどをテキストとして設定した場合も、すべてエスケープ処理されるため、タ
+グはテキストとして表示され、HTMLタグとしては機能しない。
+エスケープしょりされてほしくない場合は幾何のようにする。
+-----------------
+{!! 値・変数・式・関数など !!}
+-----------------
+{!!と!!}の間に値を設定する。
+これでエスケープ処理されなくなり、HTMLタグなどはそのままタグとして機能する。
+==================================
+＠ifディレクティブ
+Bladeには、ディレクティブという機能がある。
+これは、言語における構文のような役割を果たす。
+条件分岐（if）に相当するディレクティブが@if。
+----------------------------------
+＊条件がtrueのときに表示をする
+@if ( 条件 )
+...出力内容...
+@endif
+----------------------------------
+＊条件によって異なる表示をする
+@if (条件)
+...出力内容...
+@else
+...出力内容...
+@endif
+----------------------------------
+＊複数の条件を設定する
+@if (条件)
+...出力内容...
+@elseif (条件)
+...出力内容...
+@else
+...出力内容...
+@endif
+----------------------------------
+ディレクティブは、基本的に「@ディレクティブ名」という形で記述する。
+@ifは、その後に条件を設定する。
+trueなら、それ以降@endifまでの部分を表示する。
+-----------------
+@ifには、@elseifと@elseディレクティブが用意されている。
+@elseifは、いくつでもつづけて記述できる。
+-----------------
+基本的にPHPのif文と同じ働きをするが、ディレクトリの場合は、何かを実行するので
+はなく「表示する」。
+「条件がtrueならこれを表示する、falseならこれを表示する」というように条件に応
+じて、表示する内容を制御するのが@if。
+----------------------------------
+＊@ifを利用する
+/* resources/views/hello/index.blade.php */
+<body>
+<h1>Blade/Index</h1>
+@if ($msg != '')
+<p>こんにちは、{{$msg}}さん。</p>
+@else
+<p>何か書いてください。</p>
+@endif
+<form method="POST" action="/hello">
+  @csrf
+  <input type="text" name="msg">
+  <input type="submit">
+</form>
+</body>
+-----------------
+$msg!=''がtrueなら$msgを使ったメッセージを表示している。
+falseなら、「何か書いてください。」と表示させている。
+==================================
+
+＠特殊なディレクティブ
+分岐処理を行うディレクティブはいくつか用意されている。
+いずれもオプションとして@elseを追加できる。
+----------------------------------
+＊条件が非成立のときに表示
+@unless (条件)
+...表示内容...
+@endulness
+-----------------
+@ifと逆の働きをする。
+falseで表示、trueで非表示。
+@elseを用意した場合は、条件がtrueの時に表示される。
+----------------------------------
+＊変数が空の場合に表示
+@empty (変数)
+...表示内容...
+@endempty
+-----------------
+(変数)に指定した、変数が空の場合に表示を行う。
+@elseは、変数が空でなく、値が設定されている場合に表示される。
+----------------------------------
+＊変数が定義済みの場合に表示
+@isset (変数)
+...表示内容...
+@endisset
+-----------------
+@emptyと似ているが、@issetは、変数そのものが定義されているかを確認する。
+変数が定義され、nullｄない場合に表示をを行う。
+@elseを用意することで、変数が未定義またはnullだった場合の表示を用意できる。
+----------------------------------
+＊@issetで変数定義をチェックする
+/* resources/views/hello/index.blade.php */
+<body>
+<h1>Blade/Index</h1>
+@isset ($msg)
+<p>こんにちは、{{ $msg }}さん。</p>
+@else
+<p>何か書いてください。</p>
+@endisset
+<form method="POST" action="/hello">
+...
+-----------------
+/* App/Http/Controllers/HelloController.php */
+class HelloController extends Controller
+{
+  public function index()
+  {
+    return view('hello.index');
+  }
+  public function post(Request $req)
+  {
+    $data = [
+      'msg'=>$req->msg,
+    ];
+   return view('hello.index', $data);
+  }
+}
+-----------------
+ここではindexアクションで値をテンプレートに渡していないので、当然$msgは未定義
+となり、@issset($msg)はfalseとなる。
+このように、「GET時には値がない」「POSTされると値が渡される」等処理を@issetで
+分岐できる。
+これによりコードがシンプルになる。
+==================================
+
+＠繰り返しのディレクティブ
+＊for文に相当するもの
+-----------------
+@for (初期化; 条件; 後処理)
+...繰り返す表示...
+@endfor
+----------------------------------
+＊foreach文に相当するもの
+@foreach ($配列 as $変数)
+...繰り返す表示...
+@endforeach
+----------------------------------
+＊foreach-else構文に相当するもの
+@forelse ($配列 as $変数)
+...繰り返す表示...
+@empty
+...$変数が空のときの表示...
+@endforelse
+-----------------
+これは、foreach構文にelseを追加した場合の処理に相当。
+()の配列から順に値を取り出していくのは@foreachと同じだが、値をすべて取り出し終
+えて、取り出せなくなったとき、@emptyにある処理を実行して繰り返しを終える。
+----------------------------------
+＊whileに相当するもの
+@while (条件)
+...繰り返す表示...
+@endwhile
+-----------------
+@whileでは、実行時に条件で使っている変数などの値が変化しなければ、無限ループと
+なってしまうため、ディレクティブ内で何らかの処理を実行する必要がある。
+これには@phpディレクティブが必要となる。
+----------------------------------
+＊繰り返しディレクティブを利用する
+/* resources/views/hello/index.blade.php
+<body>
+<h1>Blade/Index</h1>
+<p>&#64;foreachディレクティブの例</p>
+<ol>
+@foreach ($data as $item)
+<li>{{ $item }}</li>
+@endforeach
+</ol>
+</body>
+-----------------
+@foreachディレクティブに($data as $item)という形で繰り返しの設定をしている。
+これにより、$dataから順に値を取り出して$itemに代入する、という繰り返しが実行さ
+れる。
+コントローラ側では、$dataに配列を渡すようにすればよい。
+-----------------
+/* App/Http/Controllers/HelloController.php */
+public function index()
+{
+  $data = ['one', 'two', 'three', 'four', 'five',];
+  return view('hello.index', ['data'=>$data,]);
+}
+==================================
+
+＠@breakと@continue
+繰り返しディレクティブでも、breakやcontineに相当するものが用意されている。
+----------------------------------
+＊@break
+PHPのbreakに相当。
+これが出力されると、その時点での繰り返しのディレクティブが中断される。
+----------------------------------
+＊@continue
+PHPのcontinueに相当。
+これより後は表示せず、すぐに次の繰り返しに進む。
+----------------------------------
+/* resources/views/hello/index.blade.php */
+<body>
+<h1>Blade/Index</h1>
+<p>&#064;forディレクティブの例</p>
+<ol>
+@for ($i = 1; $i < 100; $i++)
+@if ($i % 2 == 1)
+  @continue
+@elseif ($i <= 10)
+<li>No, {{ $i }}</li>
+@else
+  @break
+@endif
+@endfor
+==================================
+
+＠$loopによるループ変数
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -15,9 +15,8 @@ use Illuminate\Support\Facades\Route;
 
 
 use App\Http\Controllers\HelloController;
-/*Route::get('hello',[HelloController::class, 'index']);
-Route::get('hello/other', [HelloController::class, 'other']);
-Route::get('hello', HelloController::class);
-*/
+use App\Http\Middleware\HelloMiddleware;
+
 Route::get('hello', [HelloController::class, 'index']);
+Route::post('hello', [HelloController::class, 'post']);
 
